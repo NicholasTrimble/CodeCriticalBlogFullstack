@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>New Post - CodeCritical</title>
+    <link href="../static/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<nav>
+    <a href="{{ url_for('home') }}">CodeCritical</a>
+    <a href="{{ url_for('about') }}">About</a>
+    <a href="{{ url_for('contact') }}">Contact</a>
+</nav>
+
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <h1>Create a New Post</h1>
+    <form method="POST" action="{{ url_for('new_post') }}">
+        <label>Title:</label>
+        <input type="text" name="title" required>
+
+        <label>Subtitle:</label>
+        <input type="text" name="subtitle">
+
+        <label>Author:</label>
+        <input type="text" name="author" required>
+
+        <label>Content:</label>
+        <textarea name="content" rows="10" required></textarea>
+
+        <button type="submit">Publish</button>
+    </form>
+</div>
+</body>
+</html>

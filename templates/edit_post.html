@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit Post - CodeCritical</title>
+    <link href="../static/css/styles.css" rel="stylesheet">
+</head>
+<body>
+<nav>
+    <a href="{{ url_for('home') }}">CodeCritical</a>
+    <a href="{{ url_for('about') }}">About</a>
+    <a href="{{ url_for('contact') }}">Contact</a>
+</nav>
+
+<div class="container">
+    <h1>Edit Post</h1>
+    <form method="POST" action="{{ url_for('edit_post', post_id=post.id) }}">
+        <label>Title:</label>
+        <input type="text" name="title" value="{{ post.title }}" required>
+
+        <label>Subtitle:</label>
+        <input type="text" name="subtitle" value="{{ post.subtitle }}">
+
+        <label>Content:</label>
+        <textarea name="content" rows="10" required>{{ post.content }}</textarea>
+
+        <button type="submit">Update Post</button>
+    </form>
+</div>
+</body>
+</html>

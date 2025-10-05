@@ -1,0 +1,94 @@
+/* dark-theme.css */
+
+/* Override main colors */
+:root {
+    --bs-body-color: #ffffff;      /* White text */
+    --bs-body-bg: #000000;         /* Black background */
+    --bs-link-color: #ffffff;      /* White links */
+    --bs-link-hover-color: #00ffff; /* Cyan hover for links for gamer vibe */
+    --bs-gray: #999999;            /* Adjust grays for contrast */
+    --bs-gray-dark: #666666;
+}
+
+/* Body overrides */
+body {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+}
+
+/* Header / Masthead */
+.masthead {
+    color: var(--bs-body-color);
+}
+
+/* Navbar */
+.navbar, .navbar-light .navbar-nav .nav-link {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+    color: var(--bs-link-hover-color);
+}
+
+/* Footer */
+footer {
+    background-color: var(--bs-gray-dark);
+    color: var(--bs-body-color);
+}
+
+footer a {
+    color: var(--bs-link-color);
+}
+
+footer a:hover {
+    color: var(--bs-link-hover-color);
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--bs-body-color);
+}
+
+/* Post previews */
+.post-preview {
+    border-color: var(--bs-gray);
+}
+
+.post-meta {
+    color: var(--bs-gray);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #0085A1;
+    border-color: #0085A1;
+}
+
+.btn-primary:hover {
+    background-color: #00ffff;
+    border-color: #00ffff;
+}
+
+.btn-success {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.btn-success:hover {
+    background-color: #00ff99;
+    border-color: #00ff99;
+}
+/* Footer overrides */
+footer {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+footer a {
+    color: #ffffff !important;
+}
+
+footer a:hover {
+    color: #00ffff !important;
+}
