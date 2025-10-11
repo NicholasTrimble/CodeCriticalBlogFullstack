@@ -12,11 +12,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # ----Mail----#
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # If using Gmail
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'your_email@gmail.com'  # Replace with your email
-app.config['MAIL_PASSWORD'] = 'your_email_password'   # Replace with your email app password
+app.config['MAIL_USERNAME'] = 'fillinwithmymail@gmail.com'  #add email at later date when not on github
+app.config['MAIL_PASSWORD'] = 'notmyemailpassword'   #add password when cannot be viewed on github.
 mail = Mail(app)
 
 # --- Models ---
