@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -18,12 +20,15 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # ----Mail----#
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'fillinwithmymail@gmail.com'  #add email at later date when not on github
-app.config['MAIL_PASSWORD'] = 'notmyemailpassword'   #add password when cannot be viewed on github.
-mail = Mail(app)
+if MAIL_AVAILABLE and os.environ.get('MAIL_USERNAME') and os.environ.get('MAIL_PASSWORD'):
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+    app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+    mail = Mail(app)
+else:
+    MAIL_AVAILABLE = False
 
 # --- Models ---
 class Post(db.Model):
@@ -67,22 +72,21 @@ def contact():
         db.session.commit()
 
         # Send email
-        try:
-            msg = Message(
-                subject=f"[CodeCritical] {subject}",
-                sender=email,
-                recipients=['nicktrimble07@gmail.com']
-            )
-            msg.body = f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}"
-            mail.send(msg)
-            flash("Message sent successfully!", "success")
-        except Exception as e:
-            print(e)  # This prints the error to your console
-            flash("Message saved but email failed to send.", "warning")
-
-        return redirect(url_for('contact'))
-
-    return render_template('contact.html')
+        if MAIL_AVAILABLE:
+            try:
+                msg = Message(
+                    subject=f"[CodeCritical] {subject}",
+                    sender=email,
+                    recipients=['your_email@gmail.com']
+                )
+                msg.body = f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}"
+                mail.send(msg)
+                flash("Message sent successfully!", "success")
+            except Exception as e:
+                print(e)
+                flash("Message saved but email failed to send.", "warning")
+        else:
+            flash("Message saved! (Email disabled in demo)", "info")
 
 
 @app.route('/sample-post')
