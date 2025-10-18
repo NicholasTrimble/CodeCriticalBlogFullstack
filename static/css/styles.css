@@ -5527,6 +5527,7 @@ textarea.form-control-lg {
 .carousel-item {
   position: relative;
   display: none;
+  height: 500px;
   float: left;
   width: 100%;
   margin-right: -100%;
@@ -5539,6 +5540,8 @@ textarea.form-control-lg {
     transition: none;
   }
 }
+
+
 
 .carousel-item.active,
 .carousel-item-next,

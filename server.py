@@ -1,36 +1,26 @@
 import os
-
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask_wtf import FlaskForm
+from wtforms import StringField, IntegerField, TextAreaField, SubmitField
+from wtforms.validators import DataRequired, NumberRange
+from utils.steam_api import get_steam_game_details, get_featured_games
+from dotenv import load_dotenv
 
+load_dotenv()
 
-try:
-    from flask_mail import Mail, Message
-    MAIL_AVAILABLE = True
-except ImportError:
-    MAIL_AVAILABLE = False
-
+# ---- App Setup ---- #
 app = Flask(__name__)
-app.secret_key = "supersecretkey123"
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey123")
+app.config['STEAM_API_KEY'] = os.getenv('STEAM_API_KEY')
 
-# Database setup
+# ---- Database ---- #
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# ----Mail----#
-if MAIL_AVAILABLE and os.environ.get('MAIL_USERNAME') and os.environ.get('MAIL_PASSWORD'):
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-    app.config['MAIL_PORT'] = 587
-    app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-    app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-    mail = Mail(app)
-else:
-    MAIL_AVAILABLE = False
-
-# --- Models ---
+# ---- Models ---- #
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150), nullable=False)
@@ -47,12 +37,38 @@ class ContactMessage(db.Model):
     message = db.Column(db.Text, nullable=False)
     date_sent = db.Column(db.DateTime, default=datetime.utcnow)
 
+class Review(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    game_id = db.Column(db.Integer, nullable=False)
+    user_name = db.Column(db.String(100), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.Text, nullable=True)
+    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
 
-# --- Routes ---
+# ---- Forms ---- #
+class ReviewForm(FlaskForm):
+    user_name = StringField('Your Name', validators=[DataRequired()])
+    rating = IntegerField('Rating (1-10)', validators=[DataRequired(), NumberRange(min=1, max=10)])
+    comment = TextAreaField('Comment')
+    submit = SubmitField('Submit Review')
+
+# ---- Routes ---- #
+
 @app.route('/')
 def home():
     posts = Post.query.order_by(Post.date_posted.desc()).all()
-    return render_template('index.html', posts=posts)
+    try:
+        games = get_featured_games()
+
+
+        for g in games:
+            g['game_image_url'] = g.get("image_url") or url_for('static', filename='img/placeholder.png')
+    except Exception as e:
+        print("Steam API error:", e)
+        games = []
+
+    return render_template('index.html', posts=posts, games=games)
+
 
 @app.route('/about')
 def about():
@@ -66,33 +82,18 @@ def contact():
         subject = request.form['subject']
         message = request.form['message']
 
-        # Save message in database
         new_msg = ContactMessage(name=name, email=email, subject=subject, message=message)
         db.session.add(new_msg)
         db.session.commit()
+        flash("Message saved!", "success")
+        return redirect(url_for('contact'))
 
-        # Send email
-        if MAIL_AVAILABLE:
-            try:
-                msg = Message(
-                    subject=f"[CodeCritical] {subject}",
-                    sender=email,
-                    recipients=['your_email@gmail.com']
-                )
-                msg.body = f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}"
-                mail.send(msg)
-                flash("Message sent successfully!", "success")
-            except Exception as e:
-                print(e)
-                flash("Message saved but email failed to send.", "warning")
-        else:
-            flash("Message saved! (Email disabled in demo)", "info")
-
+    return render_template('contact.html')
 
 @app.route('/sample-post')
 def sample_post():
     post = Post.query.first()
-    if post is None:
+    if not post:
         post = Post(
             title="Sample Post",
             subtitle="Welcome to CodeCritical!",
@@ -102,7 +103,6 @@ def sample_post():
         db.session.add(post)
         db.session.commit()
     return render_template('post.html', post=post)
-
 
 @app.route('/post/<int:post_id>')
 def post(post_id):
@@ -143,9 +143,44 @@ def delete_post(post_id):
     flash("Post deleted!", "success")
     return redirect(url_for('home'))
 
+@app.route('/game/<int:appid>', methods=['GET', 'POST'])
+def game_page(appid):
+    try:
+        game = get_steam_game_details(appid)
+        if not game:
+            flash("Game not found.", "warning")
+            return redirect(url_for('home'))
+        # Ensure image_url exists
+        game_image_url = game.get("image_url") or url_for('static', filename='img/placeholder.png')
+    except Exception as e:
+        print("Steam API error:", e)
+        flash("Error fetching game data.", "danger")
+        return redirect(url_for('home'))
 
-# --- Run server ---
+    form = ReviewForm()
+    if form.validate_on_submit():
+        review = Review(
+            game_id=appid,
+            user_name=form.user_name.data,
+            rating=form.rating.data,
+            comment=form.comment.data
+        )
+        db.session.add(review)
+        db.session.commit()
+        flash('Your review has been submitted!', 'success')
+        return redirect(url_for('game_page', appid=appid))
+
+    reviews = Review.query.filter_by(game_id=appid).order_by(Review.date_posted.desc()).all()
+    return render_template(
+        'game_details.html',
+        game=game,
+        form=form,
+        reviews=reviews,
+        game_image_url=game_image_url
+    )
+
+# ---- Run Server ---- #
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()  # Create tables if not exist
+        db.create_all()
     app.run(debug=True)
