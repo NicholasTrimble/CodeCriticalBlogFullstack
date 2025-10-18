@@ -7,6 +7,8 @@ from wtforms import StringField, IntegerField, TextAreaField, SubmitField
 from wtforms.validators import DataRequired, NumberRange
 from utils.steam_api import get_steam_game_details, get_featured_games
 from dotenv import load_dotenv
+from flask_migrate import Migrate
+
 
 load_dotenv()
 
@@ -16,9 +18,11 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey123")
 app.config['STEAM_API_KEY'] = os.getenv('STEAM_API_KEY')
 
 # ---- Database ---- #
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///app.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
 
 # ---- Models ---- #
 class Post(db.Model):
