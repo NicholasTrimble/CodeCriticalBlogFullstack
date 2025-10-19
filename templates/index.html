@@ -50,15 +50,20 @@
 </div>
 
 {% if games %}
-<div id="featuredGamesCarousel" class="carousel slide mb-4" data-bs-ride="false">
+<div id="featuredGamesCarousel" class="carousel slide mb-4" data-bs-ride="carousel" data-bs-interval="4000">
   <div class="carousel-inner">
     {% for game in games %}
     <div class="carousel-item {% if loop.first %}active{% endif %}">
       <a href="{{ url_for('game_page', appid=game.appid) }}">
-        <img src="{{ game.image_url or url_for('static', filename='img/placeholder.png') }}"
-             class="d-block w-100"
-             alt="{{ game.name }}"
-             style="max-height: 400px; object-fit: contain;">
+        <img
+              src="{{ game.game_image_url }}"
+              onerror="this.onerror=null;this.src='{{ url_for('static', filename='img/placeholder.png') }}';"
+              class="d-block w-100"
+              alt="{{ game.name }}"
+              style="max-height: 400px; object-fit: contain;"
+              loading="eager"
+            >
+
       </a>
       <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
         <h5>
@@ -84,6 +89,7 @@
   </button>
 </div>
 {% endif %}
+
 
 
 <!-- Main Content-->

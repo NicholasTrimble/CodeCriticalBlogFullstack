@@ -62,11 +62,17 @@ class ReviewForm(FlaskForm):
 def home():
     posts = Post.query.order_by(Post.date_posted.desc()).all()
     try:
-        games = get_featured_games()
-
+        games = get_featured_games()  # your function to get games
 
         for g in games:
-            g['game_image_url'] = g.get("image_url") or url_for('static', filename='img/placeholder.png')
+            # Prefer stable Steam CDN header if available
+            if g.get("image_url") and "shared.akamai.steamstatic.com" in g["image_url"]:
+                appid = g["appid"]
+                g["image_url"] = f"https://cdn.akamai.steamstatic.com/steam/apps/{appid}/header.jpg"
+
+            # Fallback to placeholder for any missing image
+            g["game_image_url"] = g.get("image_url") or url_for('static', filename='img/placeholder.png')
+
     except Exception as e:
         print("Steam API error:", e)
         games = []
