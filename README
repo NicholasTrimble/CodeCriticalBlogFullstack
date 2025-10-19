@@ -114,6 +114,8 @@ I’m not done yet! Upcoming improvements include:
 
 Adding user accounts and authentication
 
+Updating the app to utilize postgresql
+
 Allowing users to contribute content tied to their profiles
 
 Caching Steam API requests for faster searches
