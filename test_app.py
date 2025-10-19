@@ -1,5 +1,5 @@
 import pytest
-from server import app, db, Post
+from app import app, db, Post
 
 @pytest.fixture
 def client():
