@@ -1,5 +1,6 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash
+import requests
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_wtf import FlaskForm
@@ -15,13 +16,15 @@ load_dotenv()
 # ---- App Setup ---- #
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "supersecretkey123")
-app.config['STEAM_API_KEY'] = os.getenv('STEAM_API_KEY')
 
 # ---- Database ---- #
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///app.db')
+# Use SQLite locally
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
 
 
 # ---- Models ---- #
@@ -188,6 +191,45 @@ def game_page(appid):
         reviews=reviews,
         game_image_url=game_image_url
     )
+
+
+@app.route("/search_steam")
+def search_steam():
+    query = request.args.get("q", "").strip()
+    if not query:
+        return jsonify([])
+
+    url = "https://store.steampowered.com/api/storesearch/"
+    params = {"term": query, "l": "english", "cc": "us"}
+
+    response = requests.get(url, params=params)
+    if response.status_code != 200:
+        return jsonify([])
+
+    data = response.json().get("items", [])
+    results = []
+
+    for item in data[:10]:
+        # Use get with default to avoid missing keys
+        name = item.get("name", "Unknown Game")
+        appid = item.get("id", "")
+        image = item.get("tiny_image") or ""
+        price = item.get("price")
+        if price:
+            price_text = price.get("final_formatted", "Free / Unknown")
+        else:
+            price_text = "Free / Unknown"
+
+        results.append({
+            "name": name,
+            "appid": appid,
+            "image": image,
+            "price": price_text
+        })
+
+    return jsonify(results)
+
+
 
 # ---- Run Server ---- #
 if __name__ == '__main__':

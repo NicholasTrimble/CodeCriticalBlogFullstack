@@ -10799,3 +10799,47 @@ header.masthead .post-heading .meta a {
     font-size: 2.25rem;
   }
 }
+
+<style>
+/* Wrap your input in a container */
+.search-wrapper {
+    position: relative; /* needed for absolute positioning of results */
+    width: 300px;       /* or whatever width you want */
+}
+
+/* Steam search input */
+#steam-search {
+    position: relative;
+    z-index: 10; /* above the results */
+    width: 100%;
+    padding: 8px;
+}
+
+/* Results container */
+.results-container {
+    position: absolute;
+    top: 100%; /* right below the input */
+    left: 0;
+    width: 100%;
+    z-index: 5; /* below input but above other content */
+    background: white;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Individual game card */
+.game-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+/* Image sizing */
+.game-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+</style>

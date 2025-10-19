@@ -31,6 +31,113 @@
     </div>
 </nav>
 
+
+<!-- Search bar container -->
+
+<div class="steam-search-container">
+    <input type="text" id="steam-search" placeholder="Search Steam games...">
+    <div id="steam-results"></div>
+</div>
+
+<style>
+.steam-search-container {
+    position: relative;
+    width: 300px;
+    margin: 20px;
+    z-index: 9999; /* above navbar/dark overlay */
+}
+
+#steam-search {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 10000; /* above everything */
+}
+
+#steam-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 9999;
+}
+
+.game-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
+}
+
+.game-card:hover {
+    background: #f0f0f0;
+}
+
+.game-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.game-info h3 {
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.game-info p {
+    margin: 2px 0 0 0;
+    font-size: 12px;
+    color: #666;
+}
+</style>
+
+
+<script>
+const searchInput = document.getElementById("steam-search");
+const resultsContainer = document.getElementById("steam-results");
+
+let debounceTimeout;
+
+searchInput.addEventListener("input", () => {
+    clearTimeout(debounceTimeout);
+    const query = searchInput.value.trim();
+    if (!query) {
+        resultsContainer.innerHTML = "";
+        return;
+    }
+
+    debounceTimeout = setTimeout(() => {
+        fetch(`/search_steam?q=${encodeURIComponent(query)}`)
+            .then(res => res.json())
+            .then(data => {
+                resultsContainer.innerHTML = data.map(game => `
+                    <div class="game-card">
+                        ${game.image ? `<img src="${game.image}" alt="${game.name}" class="game-image">` : ""}
+                        <div class="game-info">
+                            <h3>${game.name || "Unknown Game"}</h3>
+                            <p>${game.price || "Free / Unknown"}</p>
+                        </div>
+                    </div>
+                `).join('');
+            });
+    }, 300);
+});
+</script>
+
+
+
+
 <!-- Page Header-->
 <header class="masthead" style="background-image: url('{{ url_for('static', filename='assets/img/homescreen.jpg') }}')">
     <div class="container position-relative px-4 px-lg-5">
