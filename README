@@ -1,0 +1,131 @@
+CodeCritical Blog Website
+
+
+
+
+Full-Stack Gamer Blog Platform
+
+Live Site: https://codecritical.onrender.com
+GitHub Repository: https://github.com/NicholasTrimble/CodeCriticalBlogFullstack
+
+
+
+
+
+Overview
+
+CodeCritical started as a personal project to create a modern, gamer-friendly blogging platform. The goal was to make a site where users can read, post, and explore gaming content, all with a clean, interactive interface.
+
+Some of the standout features include:
+
+Live Steam game search – type in any game, and see results instantly with images, names, and prices pulled from the Steam API.
+
+Featured games carousel – a rotating showcase of popular games to highlight the best content.
+
+Dark mode support – because a gamer’s eyes deserve a break.
+
+Full CRUD functionality – create, edit, and delete posts effortlessly.
+
+Contact form – send messages directly through the site, optionally saved to the database or emailed.
+
+
+
+
+
+
+Features
+
+Frontend:
+
+Responsive, clean HTML templates with attention to readability.
+
+Dark mode overlay for a modern, gamer-friendly vibe.
+
+Interactive search bar and carousel for dynamic content browsing.
+
+Backend:
+
+Built with Flask and SQLAlchemy for database management.
+
+SQLite for local development, PostgreSQL in production.
+
+RESTful endpoints powering the search and CRUD functionality.
+
+Testing & Stability:
+
+Unit tests with pytest to catch bugs early.
+
+Flash messages for immediate user feedback on actions like adding or deleting posts.
+
+
+
+
+
+
+Getting Started
+
+Want to run CodeCritical locally? It’s straightforward:
+
+Clone the repo:
+git clone https://github.com/NicholasTrimble/CodeCriticalBlogFullstack.git
+cd CodeCriticalBlogFullstack
+
+Create a virtual environment and install dependencies:
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+Set environment variables (optional, but recommended):
+export FLASK_APP=app.py
+export FLASK_ENV=development
+export FLASK_SECRET_KEY="your_secret_key"
+
+Run the app:
+flask run
+python app.py
+
+
+
+
+
+Deployment
+
+Deployed on Render
+Any updates you push to GitHub can be automatically deployed, making live changes easy.
+
+
+
+Tech Stack
+
+Backend: Python, Flask, SQLAlchemy
+
+Database: SQLite (local), PostgreSQL (production)
+
+Frontend: HTML, CSS, JavaScript, Bootstrap
+
+APIs & Libraries: Steam API, Requests
+
+
+
+
+Future Plans
+
+I’m not done yet! Upcoming improvements include:
+
+Adding user accounts and authentication
+
+Allowing users to contribute content tied to their profiles
+
+Caching Steam API requests for faster searches
+
+Expanding frontend tests for full interactivity coverage
+
+
+
+
+
+This is a passion project that i will be working on over time. I have a lot of plans for the site, but
+alas I am also very busy with furthering my education in many different ways. I am also looking
+for work, and I have a family to take care of. So while yes, I have features I really want to add to this,
+I will be busy and will be making new changes slowly. But, do not think that I am done just yet.
+Just be patient :D
